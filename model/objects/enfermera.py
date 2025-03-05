@@ -1,4 +1,4 @@
-from model.usuario import Usuario
+from usuario import Usuario
 
 class Enfermera(Usuario):
     def __init__(self, id, nombre, edad, area):
@@ -17,3 +17,6 @@ class Enfermera(Usuario):
 
     def asistirMedico(self):
         return "Asistiendo al médico"
+    
+    def registrar_signos(self, cita, signos):
+        cita.registrar_signos_vitales(signos)
