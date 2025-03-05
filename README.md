@@ -74,4 +74,5 @@ El sistema está estructurado según el siguiente diagrama UML:
 - Visualizar todas las citas del sistema
 - Gestionar horarios de personal médico
 
-![image](https://github.com/user-attachments/assets/f270bd1b-fd92-4f12-93a0-6b5c6e742414)
+![image](https://github.com/user-attachments/assets/aa8d45db-5f8b-440d-8c5a-75fcd6273a3e)
+
