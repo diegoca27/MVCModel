@@ -2,7 +2,7 @@
 import sys
 from PyQt5.QtWidgets import QApplication, QMainWindow
 from views.login_hospital import Ui_MainWindow
-from controllers.login_controller import LoginController
+from model.DAO.add_person_DAO import LoginController
 
 if __name__ == "__main__":
     app = QApplication(sys.argv)
