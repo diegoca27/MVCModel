@@ -11,7 +11,7 @@
 from PyQt5 import QtCore, QtGui, QtWidgets
 
 
-class Ui_MainWindow(object):
+class UI_LoginWindow(object):
     def setupUi(self, MainWindow):
         MainWindow.setObjectName("MainWindow")
         MainWindow.resize(817, 637)
@@ -89,7 +89,7 @@ class Ui_MainWindow(object):
         self.cmb_role.addItem("")
         self.cmb_role.addItem("")
         self.lb_role = QtWidgets.QLabel(self.centralwidget)
-        self.lb_role.setGeometry(QtCore.QRect(260, 450, 81, 41))
+        self.lb_role.setGeometry(QtCore.QRect(260, 450, 41, 41))
         font = QtGui.QFont()
         font.setPointSize(14)
         font.setBold(False)
@@ -97,7 +97,7 @@ class Ui_MainWindow(object):
         self.lb_role.setFont(font)
         self.lb_role.setObjectName("lb_role")
         self.btn_login = QtWidgets.QPushButton(self.centralwidget)
-        self.btn_login.setGeometry(QtCore.QRect(310, 520, 131, 41))
+        self.btn_login.setGeometry(QtCore.QRect(310, 550, 131, 41))
         font = QtGui.QFont()
         font.setPointSize(14)
         font.setBold(False)
