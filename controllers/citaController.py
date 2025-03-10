@@ -43,6 +43,19 @@ class CitaController:
             self.ui.tb_patient_appointments.setItem(row, 2, QTableWidgetItem(cita["estado"]))
             self.ui.tb_patient_appointments.setItem(row, 3, QTableWidgetItem(cita["motivo"]))
 
+
+    def cargar_citas_doctor(self):
+        """Carga las citas del médico en la tabla tb_doctor_appointments."""
+        citas = self.dao.obtener_citas_medico(self.usuario_id)
+        self.ui.tb_doctor_appointments.setRowCount(len(citas))
+
+        for row, cita in enumerate(citas):
+            self.ui.tb_doctor_appointments.setItem(row, 0, QTableWidgetItem(cita["paciente"]))
+            self.ui.tb_doctor_appointments.setItem(row, 1, QTableWidgetItem(cita["fecha"]))
+            self.ui.tb_doctor_appointments.setItem(row, 2, QTableWidgetItem(cita["hora"]))
+            self.ui.tb_doctor_appointments.setItem(row, 3, QTableWidgetItem(cita["estado"]))
+            self.ui.tb_doctor_appointments.setItem(row, 4, QTableWidgetItem(cita["motivo"]))
+
     def mostrar_error(self, mensaje):
         QMessageBox.critical(None, "Error", mensaje)
 

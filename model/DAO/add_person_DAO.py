@@ -151,7 +151,33 @@ class CitaDAO:
         except Exception as e:
             print(f"Error al obtener las citas: {e}")
             return []
+    
+    def obtener_citas_medico(self, medico_id):
+        """Obtiene todas las citas asignadas a un médico específico."""
+        try:
+            citas = self.citas_ref.where("medico_id", "==", medico_id).stream()
+            lista_citas = []
+
+            for cita in citas:
+                cita_data = cita.to_dict()
+                paciente_id = cita_data.get("usuario_id")
+
+                # Obtener el nombre del paciente
+                usuario_doc = self.usuarios_ref.document(str(paciente_id)).get()
+                nombre_paciente = usuario_doc.to_dict().get("nombre", "Desconocido") if usuario_doc.exists else "Desconocido"
+
+                # Agregar el nombre del paciente a la cita
+                cita_data["nombre_paciente"] = nombre_paciente
+                lista_citas.append(cita_data)
+
+            print(f"Total de citas encontradas para el médico {medico_id}: {len(lista_citas)}")
+            return lista_citas
+
+        except Exception as e:
+            print(f"Error al obtener citas del médico {medico_id}: {e}")
+            return []
         
+
     def actualizar_signos_vitales(self, usuario_id, signos_vitales):
         try:
             # Primero intentamos convertir el usuario_id a entero si está almacenado como número
