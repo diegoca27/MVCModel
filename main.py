@@ -9,6 +9,7 @@ from views.administrator_dashboard import UI_AdminDashboard
 from model.DAO.add_person_DAO import CitaDAO
 from controllers.citaController import CitaController
 from controllers.nurseController import NurseDashboardController
+from controllers.medicController import MedicoDashboardController
 
 
 class HospitalApp:
@@ -80,6 +81,8 @@ class HospitalApp:
             elif rol == "Médico":
                 self.current_ui = Ui_DoctorsDashboard()
                 self.current_ui.setupUi(self.main_window)
+                self.medic_controller = MedicoDashboardController(self.main_window, nombre, usuario_id)
+
 
             elif rol == "Enfermera":
                 self.current_ui = UI_NurseDashboard()
