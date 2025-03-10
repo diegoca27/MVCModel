@@ -44,9 +44,9 @@ class CitaController:
             self.ui.tb_patient_appointments.setItem(row, 3, QTableWidgetItem(cita["motivo"]))
 
 
-    def cargar_citas_doctor(self):
+    def load_medic_appointments(self):
         """Carga las citas del médico en la tabla tb_doctor_appointments."""
-        citas = self.dao.obtener_citas_medico(self.usuario_id)
+        citas = self.dao.get_medic_appointments(self.usuario_id)
         self.ui.tb_doctor_appointments.setRowCount(len(citas))
 
         for row, cita in enumerate(citas):
