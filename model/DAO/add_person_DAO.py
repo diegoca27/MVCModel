@@ -172,6 +172,7 @@ class CitaDAO:
                 lista_citas.append(cita_data)
 
             print(f"Total de citas encontradas para el médico {medico_id}: {len(lista_citas)}")
+            print(lista_citas)
             return lista_citas
 
         except Exception as e:
@@ -257,3 +258,23 @@ class CitaDAO:
         except Exception as e:
             print(f"❌ Error al confirmar la cita {cita_id}: {e}")
             return False
+        
+
+    def get_patient(self, patient_id):
+            """Obtiene el nombre del paciente usando su 'id' en el campo 'id'."""
+            try:
+                # Query the 'patients' collection to find a document where the field 'id' matches patient_id
+                patient_ref = self.usuarios_ref.where("id", "==", int(patient_id)).limit(1)
+                patient_docs = patient_ref.stream()
+
+                # Get the first matching document (if any)
+                for patient_doc in patient_docs:
+                    print("Patient found: ", patient_doc.to_dict())  # You can print the entire document
+                    return patient_doc.to_dict()
+
+                # If no document found, handle it accordingly
+                print(f"No patient found with id: {patient_id}")
+                return None
+            except Exception as e:
+                print(f"Error while fetching patient: {e}")
+                return None
