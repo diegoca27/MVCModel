@@ -1,7 +1,8 @@
 from PyQt5.QtWidgets import QMainWindow, QMessageBox, QTableWidgetItem
-from PyQt5.QtCore import Qt
+from PyQt5.QtCore import Qt, QDate, QTime
 from model.DAO.add_person_DAO import CitaDAO
 from views.doctors_dashboard import Ui_DoctorsDashboard
+from views.appointment_update import Ui_UpdateAppointmentWindow
 
 
 class MedicoDashboardController(QMainWindow):
@@ -34,10 +35,13 @@ class MedicoDashboardController(QMainWindow):
 
             self.ui.tb_doctor_appointments.setRowCount(0)
 
+            
+
             for i, cita in enumerate(citas):
                 cita_id = cita["id"]
+                patient = self.dao.get_patient(cita.get("usuario_id"))
                 self.ui.tb_doctor_appointments.insertRow(i)
-                self.ui.tb_doctor_appointments.setItem(i, 0, QTableWidgetItem(str(cita.get("nombre_paciente", ""))))
+                self.ui.tb_doctor_appointments.setItem(i, 0, QTableWidgetItem(patient["nombre"]))
                 self.ui.tb_doctor_appointments.setItem(i, 1, QTableWidgetItem(cita.get("fecha", "")))
                 self.ui.tb_doctor_appointments.setItem(i, 2, QTableWidgetItem(cita.get("hora", "")))
                 self.ui.tb_doctor_appointments.setItem(i, 3, QTableWidgetItem(cita.get("estado", "")))
@@ -57,18 +61,30 @@ class MedicoDashboardController(QMainWindow):
             QMessageBox.warning(self, "Error", "Seleccione una cita para actualizar su estado")
             return
 
-        item_paciente = self.ui.tb_doctor_appointments.item(selected_row, 0)
-        cita_id = item_paciente.data(Qt.UserRole)
-        success = self.dao.confirm_appointment(cita_id)
+        #Get the selected row's appointment ID
+        # item_paciente = self.ui.tb_doctor_appointments.item(selected_row, 0)
+        # cita_id = item_paciente.data(Qt.UserRole)
 
-        # TODO: Add update appointment logic
-        # ...
+        #Get the appointment data from the table directly (no need to query again)
+        paciente_nombre = self.ui.tb_doctor_appointments.item(selected_row, 0).text()
+        cita_fecha = self.ui.tb_doctor_appointments.item(selected_row, 1).text()
+        cita_hora = self.ui.tb_doctor_appointments.item(selected_row, 2).text()
+        cita_estado = self.ui.tb_doctor_appointments.item(selected_row, 3).text()
+        cita_motivo = self.ui.tb_doctor_appointments.item(selected_row, 4).text()
 
-        if success:
-            QMessageBox.information(self, "Éxito", "Cita actualizada correctamente")
-            self.load_appointments()
-        else:
-            QMessageBox.warning(self, "Error", "No se pudo actualizar la cita")
+        #Open the update appointment window and populate it with the extracted data
+        self.update_window = QMainWindow()
+        self.current_ui = Ui_UpdateAppointmentWindow()
+        self.current_ui.setupUi(self.update_window)
+
+        self.current_ui.lb_patient_name.setText(paciente_nombre)
+        print("fecha de cita: ", cita_fecha)
+        self.current_ui.date_appointment.setDate(QDate.fromString(cita_fecha, "yyyy/MM/dd"))
+        self.current_ui.time_appointment.setTime(QTime.fromString(cita_hora, "HH:mm"))
+        self.current_ui.cb_status.setCurrentText(cita_estado) 
+        self.current_ui.txt_reason.setText(cita_motivo)
+        # Show the update window
+        self.update_window.show()
 
     def confirm_appointment(self):
         selected_row = self.ui.tb_doctor_appointments.currentRow()

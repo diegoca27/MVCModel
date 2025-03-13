@@ -1,5 +1,6 @@
 from PyQt5.QtWidgets import QMessageBox, QTableWidgetItem
 from model.DAO.add_person_DAO import CitaDAO
+from datetime import datetime
 
 class CitaController:
     def __init__(self, ui, usuario_id):
@@ -18,10 +19,18 @@ class CitaController:
         if not fecha or not hora or not estado or not motivo:
             self.mostrar_error("Debe completar todos los campos.")
             return
+        
+        # Convertir la fecha de dd/MM/yyyy a yyyy/MM/dd
+        try:
+            fecha_formateada = datetime.strptime(fecha, "%d/%m/%Y").strftime("%Y/%m/%d")
+            print("Fecha formateada", fecha_formateada)
+        except ValueError:
+            self.mostrar_error("El formato de fecha debe ser dd/MM/yyyy.")
+            return
 
         cita = {
             "usuario_id":self.usuario_id,
-            "fecha": fecha,
+            "fecha": fecha_formateada,
             "hora": hora,
             "estado": estado,
             "motivo": motivo
