@@ -62,8 +62,8 @@ class MedicoDashboardController(QMainWindow):
             return
 
         #Get the selected row's appointment ID
-        # item_paciente = self.ui.tb_doctor_appointments.item(selected_row, 0)
-        # cita_id = item_paciente.data(Qt.UserRole)
+        item_paciente = self.ui.tb_doctor_appointments.item(selected_row, 0)
+        appointment_id = item_paciente.data(Qt.UserRole)
 
         #Get the appointment data from the table directly (no need to query again)
         paciente_nombre = self.ui.tb_doctor_appointments.item(selected_row, 0).text()
@@ -83,8 +83,39 @@ class MedicoDashboardController(QMainWindow):
         self.current_ui.time_appointment.setTime(QTime.fromString(cita_hora, "HH:mm"))
         self.current_ui.cb_status.setCurrentText(cita_estado) 
         self.current_ui.txt_reason.setText(cita_motivo)
-        # Show the update window
+
+        # Connect the save button to the save_updated_appointment method
+        self.current_ui.bt_save.clicked.connect(lambda: self.save_updated_appointment(appointment_id))
         self.update_window.show()
+
+    def save_updated_appointment(self, appointment_id):
+        # Get the updated values from the UI
+        updated_fecha = self.current_ui.date_appointment.date().toString("yyyy/MM/dd")
+        updated_hora = self.current_ui.time_appointment.time().toString("HH:mm")
+        updated_estado = self.current_ui.cb_status.currentText()
+        updated_motivo = self.current_ui.txt_reason.toPlainText()
+
+        if not updated_fecha or not updated_hora or not updated_estado or not updated_motivo:
+            QMessageBox.warning(self, "Error", "Debe completar todos los campos.")
+            return
+
+        #dictionary with the updated data
+        updated_appointment = {
+            "fecha": updated_fecha,
+            "hora": updated_hora,
+            "estado": updated_estado,
+            "motivo": updated_motivo
+        }
+
+        # Call the DAO function to update the appointment
+        resultado = self.dao.update_appointment(appointment_id, updated_appointment)
+
+        if resultado:
+            QMessageBox.information(self, "Éxito", "Cita actualizado correctamente")
+            self.update_window.close()
+            self.load_appointments()
+        else:
+            QMessageBox.warning(self, "Error", "No se pudo actualizar la cita")
 
     def confirm_appointment(self):
         selected_row = self.ui.tb_doctor_appointments.currentRow()

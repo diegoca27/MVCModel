@@ -259,6 +259,22 @@ class CitaDAO:
             print(f"❌ Error al confirmar la cita {cita_id}: {e}")
             return False
         
+    def update_appointment(self, cita_id, updated_cita):
+        try:
+            # Get the document reference for the specific appointment
+            cita_ref = self.citas_ref.document(cita_id)
+
+            # Update the appointment with the new data
+            cita_ref.update(updated_cita)
+
+            print(f"✅ Cita {cita_id} actualizada exitosamente.")
+            return True
+        
+        except Exception as e:
+            print(f"❌ Error al actualizar la cita {cita_id}: {e}")
+            return False
+
+        
 
     def get_patient(self, patient_id):
             """Obtiene el nombre del paciente usando su 'id' en el campo 'id'."""
