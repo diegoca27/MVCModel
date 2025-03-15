@@ -19,13 +19,16 @@ class MedicoDashboardController(QMainWindow):
         # Cargar citas asignadas al médico
         self.load_appointments()
 
+        self.ui.cb_status_filter.currentIndexChanged.connect(self.filter_appointments)
+
         self.ui.bt_update_appointment.clicked.connect(self.update_appointment)
         self.ui.bt_confirm_appointment.clicked.connect(self.confirm_appointment)
 
         # self.ui.bt_logout.clicked.connect(self.logout)
 
-    def load_appointments(self):
-        """Carga las citas del médico en la tabla."""
+    
+    def load_appointments(self, status_filter=None):
+        """Loads the appointments into the table, optionally filtering by status."""
         try:
             print("Cargando citas del médico...")
             citas = self.dao.get_medic_appointments(self.medico_id)
@@ -33,26 +36,41 @@ class MedicoDashboardController(QMainWindow):
             if not citas:
                 print("No hay citas registradas para este médico.")
 
-            self.ui.tb_doctor_appointments.setRowCount(0)
-
+            self.ui.tb_doctor_appointments.setRowCount(0)  # Clear table before loading new data
             
-
-            for i, cita in enumerate(citas):
+            row_index = 0  # Use a separate counter for table rows
+            
+            for cita in citas:
+                if status_filter and cita.get("estado") != status_filter:
+                    continue  # Skip if status doesn't match filter
+                    
                 cita_id = cita["id"]
                 patient = self.dao.get_patient(cita.get("usuario_id"))
-                self.ui.tb_doctor_appointments.insertRow(i)
-                self.ui.tb_doctor_appointments.setItem(i, 0, QTableWidgetItem(patient["nombre"]))
-                self.ui.tb_doctor_appointments.setItem(i, 1, QTableWidgetItem(cita.get("fecha", "")))
-                self.ui.tb_doctor_appointments.setItem(i, 2, QTableWidgetItem(cita.get("hora", "")))
-                self.ui.tb_doctor_appointments.setItem(i, 3, QTableWidgetItem(cita.get("estado", "")))
-                self.ui.tb_doctor_appointments.setItem(i, 4, QTableWidgetItem(cita.get("motivo", "")))
+                
+                self.ui.tb_doctor_appointments.insertRow(row_index)
+                self.ui.tb_doctor_appointments.setItem(row_index, 0, QTableWidgetItem(patient["nombre"]))
+                self.ui.tb_doctor_appointments.setItem(row_index, 1, QTableWidgetItem(cita.get("fecha", "")))
+                self.ui.tb_doctor_appointments.setItem(row_index, 2, QTableWidgetItem(cita.get("hora", "")))
+                self.ui.tb_doctor_appointments.setItem(row_index, 3, QTableWidgetItem(cita.get("estado", "")))
+                self.ui.tb_doctor_appointments.setItem(row_index, 4, QTableWidgetItem(cita.get("motivo", "")))
 
-                item_paciente = self.ui.tb_doctor_appointments.item(i, 0)
+                item_paciente = self.ui.tb_doctor_appointments.item(row_index, 0)
                 item_paciente.setData(Qt.UserRole, cita_id)
+                
+                row_index += 1  # Increment only when a row is actually added
 
         except Exception as e:
             print(e)
             self.show_error(f"Error al cargar citas: {e}")
+
+    def filter_appointments(self):
+        """Applies the selected status filter to the appointments table."""
+        selected_status = self.ui.cb_status_filter.currentText()
+        
+        if selected_status == "Todos":
+            selected_status = None  # Load all appointments
+        
+        self.load_appointments(status_filter=selected_status)
 
     def update_appointment(self):
         selected_row = self.ui.tb_doctor_appointments.currentRow()
