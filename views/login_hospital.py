@@ -129,6 +129,6 @@ class UI_LoginWindow(object):
         self.cmb_role.setItemText(0, _translate("MainWindow", "Paciente"))
         self.cmb_role.setItemText(1, _translate("MainWindow", "Médico"))
         self.cmb_role.setItemText(2, _translate("MainWindow", "Enfermera"))
-        self.cmb_role.setItemText(3, _translate("MainWindow", "Administrador"))
+        # self.cmb_role.setItemText(3, _translate("MainWindow", "Administrador"))
         self.lb_role.setText(_translate("MainWindow", "Rol"))
         self.btn_login.setText(_translate("MainWindow", "Iniciar Sesión"))

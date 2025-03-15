@@ -105,7 +105,7 @@ class CitaDAO:
         try:
             # Asegurar que usuario_id sea un entero para la consulta
             if isinstance(usuario_id, str):
-                usuario_id = int(usuario_id)
+                usuario_id = usuario_id
 
             citas = self.citas_ref.where("usuario_id", "==", usuario_id).stream()
             lista_citas = []
@@ -113,6 +113,9 @@ class CitaDAO:
             for cita in citas:
                 datos = cita.to_dict()
                 lista_citas.append(datos)
+
+            print("CITAS: ",lista_citas)
+            
 
             return lista_citas
 
@@ -122,24 +125,21 @@ class CitaDAO:
 
     def obtener_todas_las_citas(self):
         try:
-            # Obtener todos los usuarios en un diccionario {id: nombre}
-            usuarios = {}
-            for doc in self.usuarios_ref.stream():
-                usuario_data = doc.to_dict()
-                usuario_id = usuario_data.get("id")
-                if usuario_id is not None:  # Verificar que el ID no sea None
-                    usuarios[usuario_id] = usuario_data.get("nombre", "Desconocido")
-
             # Obtener todas las citas
             citas = self.citas_ref.stream()
             lista_citas = []
 
             for cita in citas:
                 cita_data = cita.to_dict()
+                cita_data["id"] = cita.id  # Agregar el ID del documento
                 usuario_id = cita_data.get("usuario_id")
 
-                # Obtener el nombre del usuario desde el diccionario en memoria
-                nombre_usuario = usuarios.get(usuario_id, "Desconocido")
+                # Obtener el nombre del usuario directamente del documento
+                if usuario_id:
+                    usuario_doc = self.usuarios_ref.document(str(usuario_id)).get()
+                    nombre_usuario = usuario_doc.to_dict().get("nombre", "Desconocido") if usuario_doc.exists else "Desconocido"
+                else:
+                    nombre_usuario = "Desconocido"
 
                 # Agregar el nombre a la cita
                 cita_data["nombre_paciente"] = nombre_usuario
@@ -151,7 +151,7 @@ class CitaDAO:
         except Exception as e:
             print(f"Error al obtener las citas: {e}")
             return []
-    
+
     def get_medic_appointments(self, medico_id):
         """Obtiene todas las citas asignadas a un médico específico."""
         try:
@@ -259,6 +259,22 @@ class CitaDAO:
             print(f"❌ Error al confirmar la cita {cita_id}: {e}")
             return False
         
+    def update_appointment(self, cita_id, updated_cita):
+        try:
+            # Get the document reference for the specific appointment
+            cita_ref = self.citas_ref.document(cita_id)
+
+            # Update the appointment with the new data
+            cita_ref.update(updated_cita)
+
+            print(f"✅ Cita {cita_id} actualizada exitosamente.")
+            return True
+        
+        except Exception as e:
+            print(f"❌ Error al actualizar la cita {cita_id}: {e}")
+            return False
+
+        
 
     def get_patient(self, patient_id):
             """Obtiene el nombre del paciente usando su 'id' en el campo 'id'."""
@@ -269,7 +285,6 @@ class CitaDAO:
 
                 # Get the first matching document (if any)
                 for patient_doc in patient_docs:
-                    print("Patient found: ", patient_doc.to_dict())  # You can print the entire document
                     return patient_doc.to_dict()
 
                 # If no document found, handle it accordingly

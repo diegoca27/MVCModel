@@ -3,11 +3,12 @@ from views.nurse_dashboard import UI_NurseDashboard  # Asegúrate de importar co
 from model.DAO.add_person_DAO import CitaDAO  # Tu DAO para Firestore
 
 class NurseDashboardController(QMainWindow):
-    def __init__(self, main_window, usuario_nombre, usuario_id):
+    def __init__(self, main_window, usuario_nombre, usuario_id, main_app):
         super().__init__()
         self.ui = UI_NurseDashboard()
         self.ui.setupUi(main_window)
         self.dao = CitaDAO() 
+        self.main_app = main_app
 
         self.ui.lb_name_title.setText(usuario_nombre)
         self.ui.lb_id_title.setText(f"ID: {usuario_id}")
@@ -33,19 +34,30 @@ class NurseDashboardController(QMainWindow):
 
             if not citas:
                 print("No hay citas registradas.")  # Si la lista está vacía
+                return  # Exit the function if there are no appointments
 
             # Configurar la tabla
             self.ui.tb_nurse_appointments.setRowCount(0)  # Limpiar tabla
             
             for i, cita in enumerate(citas):
+                # Get patient info inside the loop for each appointment
+                patient = self.dao.get_patient(cita.get("usuario_id"))
+                
                 self.ui.tb_nurse_appointments.insertRow(i)
-                self.ui.tb_nurse_appointments.setItem(i, 0, QTableWidgetItem(str(cita.get("nombre_paciente", ""))))
+                
+                # Check if patient data exists
+                if patient and "nombre" in patient:
+                    self.ui.tb_nurse_appointments.setItem(i, 0, QTableWidgetItem(patient["nombre"]))
+                else:
+                    # Use nombre_paciente from the appointment if available, or "Desconocido"
+                    self.ui.tb_nurse_appointments.setItem(i, 0, QTableWidgetItem(cita.get("nombre_paciente", "Desconocido")))
+                    
                 self.ui.tb_nurse_appointments.setItem(i, 1, QTableWidgetItem(cita.get("fecha", "")))
                 self.ui.tb_nurse_appointments.setItem(i, 2, QTableWidgetItem(cita.get("hora", "")))
-
                 
         except Exception as e:
-            self.mostrar_error(f"Error al cargar citas: {e}")
+            print(f"Error detallado: {e}")  # Add detailed error logging
+            QMessageBox.warning(self, "Error", f"Error al cargar citas: {str(e)}")
 
     def register_vital_signs(self):
         """Guarda los signos vitales del paciente seleccionado en Firestore."""
@@ -92,9 +104,8 @@ class NurseDashboardController(QMainWindow):
                 self.ui.cb_patient_selection.addItem(nombre, usuario_id)  # ✅ Agrega nombre y usuario_id oculto
 
         except Exception as e:
-            self.mostrar_error(f"❌ Error al cargar la lista de pacientes: {e}")
+            QMessageBox.warning(self, "Error", "Error al cargar la lista de pacientes")
 
     def logout(self):
-        """Cierra la sesión y vuelve a la pantalla de inicio de sesión."""
-        self.close()  # Aquí puedes redirigir a la pantalla de login
+        self.main_app.iniciar_login()
 
