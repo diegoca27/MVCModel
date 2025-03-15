@@ -81,13 +81,13 @@ class HospitalApp:
             elif rol == "Médico":
                 self.current_ui = Ui_DoctorsDashboard()
                 self.current_ui.setupUi(self.main_window)
-                self.medic_controller = MedicoDashboardController(self.main_window, nombre, usuario_id)
+                self.medic_controller = MedicoDashboardController(self.main_window, nombre, usuario_id, self)
 
 
             elif rol == "Enfermera":
                 self.current_ui = UI_NurseDashboard()
                 self.current_ui.setupUi(self.main_window)
-                self.nurse_controller = NurseDashboardController(self.main_window, nombre, usuario_id)
+                self.nurse_controller = NurseDashboardController(self.main_window, nombre, usuario_id, self)
                 self.current_ui.lb_name_title.setText(nombre)
                 self.current_ui.lb_id_title.setText(f"ID: {usuario_id}")
 

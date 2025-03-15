@@ -6,12 +6,13 @@ from views.appointment_update import Ui_UpdateAppointmentWindow
 
 
 class MedicoDashboardController(QMainWindow):
-    def __init__(self, main_window, usuario_nombre, medico_id):
+    def __init__(self, main_window, usuario_nombre, medico_id, main_app):
         super().__init__()
         self.ui = Ui_DoctorsDashboard()
         self.ui.setupUi(main_window)
         self.dao = CitaDAO()
         self.medico_id = medico_id
+        self.main_app = main_app
 
         self.ui.lb_name_title.setText(usuario_nombre)
         self.ui.lb_id_title.setText(f"ID: {medico_id}")
@@ -24,7 +25,7 @@ class MedicoDashboardController(QMainWindow):
         self.ui.bt_update_appointment.clicked.connect(self.update_appointment)
         self.ui.bt_confirm_appointment.clicked.connect(self.confirm_appointment)
 
-        # self.ui.bt_logout.clicked.connect(self.logout)
+        self.ui.bt_logout.clicked.connect(self.logout)
 
     
     def load_appointments(self, status_filter=None):
@@ -153,7 +154,7 @@ class MedicoDashboardController(QMainWindow):
             QMessageBox.warning(self, "Error", "No se pudo actualizar el estado de la cita")
 
     def logout(self):
-        self.close()
+        self.main_app.iniciar_login()
 
     def show_error(self, message):
         QMessageBox.critical(self, "Error", message)
