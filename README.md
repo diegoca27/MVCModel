@@ -12,6 +12,23 @@
 
 Este proyecto implementa un sistema de gestión hospitalaria basado en la arquitectura MVC (Modelo-Vista-Controlador), desarrollado a partir del diagrama UML. El sistema permite la gestión de citas médicas, usuarios del hospital y sus diferentes roles.
 
+## Credenciales para acceso
+
+ - Médico
+    - medico1
+    - id -> 3
+    - rol -> médico
+
+ - Paciente
+    - paciente1
+    - id -> 1
+    - rol -> paciente
+
+ - Enfermera
+    - enfermera1
+    - id -> 2
+    - rol -> enfermera
+
 ## Arquitectura del Sistema
 
 ### Modelo
